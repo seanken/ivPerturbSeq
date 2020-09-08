@@ -16,7 +16,6 @@
 ##4) R, including dplyr and tidyr
 ##########################################
 
-#export R_LIBS_USER=/psych/genetics_data/ssimmons/R/x86_64-pc-linux-gnu-library/3.3
 
 tenXdir=$1
 pert=$2
@@ -35,8 +34,8 @@ echo "Make into fastq"
 bedtools bamtofastq -i $outdir/unmapped.bam -fq $outdir/unmapped.fq
 
 
-echo "Make Reference"
-/psych/genetics_data/ssimmons/Perturb/10X_pert/makeRef.sh $pert $outdir 
+echo "Make STAR Reference"
+makeRef.sh $pert $outdir 
 
 echo "Map to reference!"
 STAR --genomeDir $outdir/STAR --readFilesIn $outdir/unmapped.fq --outFileNamePrefix $outdir/STAR_out --outSAMtype BAM SortedByCoordinate --alignIntronMax 1
@@ -57,7 +56,7 @@ awk '{print $1}' $outdir/unique.txt > $outdir/mapped.txt
 samtools view $outdir/unmapped.bam | fgrep -w -f $outdir/mapped.txt | awk '{print $1"\t"$21"\t"$24}' > $outdir/withcbc.txt
 
 echo "Extract count matrix!"
-Rscript /psych/genetics_data/ssimmons/Perturb/10X_pert/GetMatrix.R $outdir $pert
+Rscript GetMatrix.R $outdir $pert
 
 ###QUESTION: Do we want to clean up everything? Only some?
 echo Clean up!
